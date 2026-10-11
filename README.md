@@ -41,7 +41,7 @@ A cross-platform desktop tool for **password strength analysis** and
 - For serious use, prefer well-audited tools like age, gpg, or openssl enc -aes-256-gcm, or a proper secrets manager.
 
 ## Limitations
-- Text only. File encryption is not in scope for v1.
+- Text only. File encryption is not in scope for Study Version.
 - Password strength is an estimate. Real-world cracking depends on the hash used and the attacker's hardware.
 - No clipboard auto-clear, no auto-lock, no keyfile support.
 

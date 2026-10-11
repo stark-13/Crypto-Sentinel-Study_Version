@@ -5,8 +5,9 @@ from core.crypto import encrypt, decrypt
 
 
 class CryptoTab(ttk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, set_status=None):
         super().__init__(parent)
+        self._set_status = set_status or (lambda msg: None)
         self._build_ui()
 
     def _build_ui(self):
@@ -26,8 +27,11 @@ class CryptoTab(ttk.Frame):
         input_frame = ttk.LabelFrame(self, text="Input Text", padding=10)
         input_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
 
-        self.input_text = tk.Text(input_frame, wrap=tk.WORD, font=("Consolas", 11), height=7)
+        self.input_text = tk.Text(
+            input_frame, wrap=tk.WORD, font=("Consolas", 11), height=7, padx=6, pady=6
+        )
         self.input_text.pack(fill=tk.BOTH, expand=True)
+        self.input_text.bind("<Control-Return>", self._on_ctrl_enter)
 
         # --- Passphrase ---
         pass_frame = ttk.LabelFrame(self, text="Passphrase", padding=10)
@@ -48,11 +52,13 @@ class CryptoTab(ttk.Frame):
             pass_frame, text="Show", variable=self.pass_show_var, command=toggle_pass
         ).pack(side=tk.LEFT)
 
-        # --- Action buttons ---
+        # --- Actions ---
         btn_frame = ttk.Frame(self)
         btn_frame.pack(fill=tk.X, padx=10, pady=5)
 
-        ttk.Button(btn_frame, text="Run", command=self._on_run).pack(side=tk.LEFT)
+        ttk.Button(
+            btn_frame, text="Run  (Ctrl+Enter)", command=self._on_run
+        ).pack(side=tk.LEFT)
         ttk.Button(btn_frame, text="Copy Output", command=self._copy_output).pack(
             side=tk.LEFT, padx=8
         )
@@ -63,9 +69,22 @@ class CryptoTab(ttk.Frame):
         output_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(5, 10))
 
         self.output_text = tk.Text(
-            output_frame, wrap=tk.WORD, font=("Consolas", 11), height=7, state=tk.DISABLED
+            output_frame,
+            wrap=tk.WORD,
+            font=("Consolas", 11),
+            height=7,
+            state=tk.DISABLED,
+            padx=6,
+            pady=6,
         )
         self.output_text.pack(fill=tk.BOTH, expand=True)
+
+    def focus_input(self):
+        self.input_text.focus_set()
+
+    def _on_ctrl_enter(self, event):
+        self._on_run()
+        return "break"
 
     def _on_run(self):
         mode = self.mode_var.get()
@@ -82,10 +101,13 @@ class CryptoTab(ttk.Frame):
         try:
             if mode == "encrypt":
                 result = encrypt(text, password)
+                self._set_status("Encryption complete.")
             else:
                 result = decrypt(text, password)
+                self._set_status("Decryption complete.")
         except ValueError as exc:
             self._show_error(str(exc))
+            self._set_status(f"Error: {exc}")
             return
 
         self._set_output(result)
@@ -104,8 +126,10 @@ class CryptoTab(ttk.Frame):
         if content:
             self.clipboard_clear()
             self.clipboard_append(content)
+            self._set_status("Output copied to clipboard.")
 
     def _clear_all(self):
         self.input_text.delete("1.0", tk.END)
         self.pass_var.set("")
         self._set_output("")
+        self._set_status("Cleared.")

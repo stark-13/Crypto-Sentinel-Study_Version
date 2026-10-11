@@ -33,6 +33,18 @@ A cross-platform desktop tool for **password strength analysis** and
 - Python **3.10+** (tested on 3.12/3.13)
 - Linux, Windows, or macOS
 
+## Security notes
+- This tool is for educational use. Do not rely on it for protecting real data.
+- Passphrases are never stored, logged, or transmitted.
+- Wrong passphrases and tampered ciphertexts are detected by the GCM tag.
+- No network access is performed by the tool.
+- For serious use, prefer well-audited tools like age, gpg, or openssl enc -aes-256-gcm, or a proper secrets manager.
+
+## Limitations
+- Text only. File encryption is not in scope for v1.
+- Password strength is an estimate. Real-world cracking depends on the hash used and the attacker's hardware.
+- No clipboard auto-clear, no auto-lock, no keyfile support.
+
 ## Installation
 
 ```bash

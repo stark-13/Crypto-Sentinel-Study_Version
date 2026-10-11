@@ -44,4 +44,4 @@ source .venv/bin/activate
 # Windows (PowerShell)
 .venv\Scripts\Activate.ps1
 
-pip install -r requirements.txt
+pip install -r Requirements.txt

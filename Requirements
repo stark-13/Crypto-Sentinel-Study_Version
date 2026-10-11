@@ -1,0 +1,2 @@
+zxcvbn-python>=4.4.28
+cryptography>=42.0.0
